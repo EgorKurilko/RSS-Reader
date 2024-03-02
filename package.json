@@ -5,18 +5,27 @@
   "description": "[![Actions Status](https://github.com/EgorKurilko/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/EgorKurilko/frontend-project-11/actions)",
   "main": "index.js",
   "scripts": {
+    "start": "webpack serve --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "EgorKurilko",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "css-loader": "^6.10.0",
     "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
+    "html-webpack-plugin": "^5.6.0",
+    "postcss-loader": "^8.1.1",
     "prettier": "^3.2.5",
+    "sass": "^1.71.1",
+    "sass-loader": "^14.1.1",
+    "style-loader": "^3.3.4",
     "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.2"
   }
 }
