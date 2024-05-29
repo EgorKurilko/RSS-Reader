@@ -11,8 +11,13 @@
   "author": "EgorKurilko",
   "license": "ISC",
   "dependencies": {
+    "@floating-ui/dom": "^1.6.3",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
-    "lodash": "^4.17.21"
+    "i18next": "^23.10.1",
+    "lodash": "^4.17.21",
+    "on-change": "^5.0.1",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "css-loader": "^6.10.0",
