@@ -19,7 +19,9 @@ export default (elements, i18n, state) => {
     elements.inputField.classList.add('is-invalid');
     elements.messagesField.classList.add('text-danger');
     console.log('renderFailed ERR 21 view');
-    elements.messagesField.textContent = i18n.t(state.errors);// ЧТО ЭТО?????? работает!
+    console.log('ERROR:', state.errors);
+    elements.messagesField.textContent = i18n.t(state.errors);
+
   };
 
   const renderSuccess = () => {
@@ -32,7 +34,7 @@ export default (elements, i18n, state) => {
     elements.messagesField.textContent = i18n.t('messages.validLink'); 
   };
 
-  const renderForm = () => {
+  const renderForm = (status) => {
     switch (status) {
       case 'loading':
         renderLoading();

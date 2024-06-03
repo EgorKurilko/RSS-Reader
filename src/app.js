@@ -11,9 +11,8 @@ import parse from './parse.js';
 const uploadRss = (watchedState, url) => {
 
   return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
-  .then((response) => {// ошибка парсинга, неизвестная ошибка - реализовать их
+  .then((response) => {
     const { feed, posts } = parse(response.data.contents);
-    // console.log('RESPONSE 17 app', parse(response.data.contents));
 
     feed.id = uniqueId();
     feed.url = url;
@@ -29,9 +28,25 @@ const uploadRss = (watchedState, url) => {
     watchedState.status = 'success';
   })
   .catch ((err) => {
-    watchedState.status = 'failed';
-    console.log('uploadRss ERR', err);
-    watchedState.errors = 'messages.networkErr'; // код ошибки - ошибка сети
+    // тестовый код ниже:
+    if(err.isAxiosError) {
+      console.log('Axios ERR', err.message);
+      watchedState.errors = 'messages.networkErr';
+      watchedState.status = 'failed';
+
+    } else if(err.isParsingError) {
+      console.log('invalidRss ERR', err.message);
+      watchedState.errors = 'messages.invalidFeed';
+      watchedState.status = 'failed';
+    } else {
+      watchedState.errors = 'messages.defaultErr';
+      watchedState.status = 'failed';
+      // throw new Error('messages.defaultErr');
+    }
+    // рабочий код ниже
+    // watchedState.status = 'failed';
+    // console.log('uploadRss ERR', err);
+    // watchedState.errors = 'messages.networkErr';
   });
 };
 
@@ -89,6 +104,7 @@ const app = () => {
     feedsEl: document.querySelector('.feeds'),
     postsEl: document.querySelector('.posts'),
     modal: document.querySelector('.modal'),
+    
   };
 
   const i18n = i18next.createInstance();
@@ -101,7 +117,7 @@ const app = () => {
 
     const state = {
       status: 'filing',
-      errors: [],
+      errors: null,
       feeds: [],
       posts: [],
       uiState: {
