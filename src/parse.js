@@ -5,16 +5,9 @@ const parse = (xmlString) => {
     const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
     const errorNode = xmlDoc.querySelector('parsererror');
     if (errorNode) {
-        // const titleError = errorNode.querySelector('h3').textContent;
-        // const bodyError = errorNode.querySelector('div').textContent;
-        // const error = `${titleError} "${bodyError}"`;
-
         const error = new Error(errorNode.textContent);
         error.isParsingError = true;
-        console.log('parse ERR 12', error);
         throw error;        
-        // throw new Error('messages.invalidFeed');
-        // throw new Error(error.isParsingError);
     } else {
         const parent = xmlDoc.querySelector('channel');
         const titleFeed = parent.querySelector('title').textContent;
@@ -32,6 +25,5 @@ const parse = (xmlString) => {
         })
     return { feed, posts };
     };
-    // return { feed, posts };
 };
 export default parse;

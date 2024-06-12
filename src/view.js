@@ -52,7 +52,7 @@ export default (elements, i18n, state) => {
     }
   };
 
-  const renderFeeds = () => {
+  const renderFeeds = (state) => {
     elements.feedsEl.innerHTML = '';
 
     const divBorderFeed = document.createElement('div');
@@ -71,30 +71,27 @@ export default (elements, i18n, state) => {
     const ulFeeds = document.createElement('ul');
     ulFeeds.classList.add('list-group', 'border-0', 'rounded-0');
     divBorderFeed.appendChild(ulFeeds);
-  };  
 
-  const addNewFeed = (state) => {
     state.feeds.map((feed) => {
       
-    const ulFeeds = elements.feedsEl.querySelector('ul');
+      const ulFeeds = elements.feedsEl.querySelector('ul');
+      const liFeed = document.createElement('li');
+      liFeed.classList.add('list-group-item', 'border-0', 'border-end-0');
+      ulFeeds.prepend(liFeed);
 
-    const liFeed = document.createElement('li');
-    liFeed.classList.add('list-group-item', 'border-0', 'border-end-0');
-    ulFeeds.prepend(liFeed);
+      const title = document.createElement('h3');
+      title.classList.add('h6', 'm-0');
+      title.textContent = feed.titleFeed;
+      liFeed.appendChild(title);
 
-    const title = document.createElement('h3');
-    title.classList.add('h6', 'm-0');
-    title.textContent = feed.titleFeed;
-    liFeed.appendChild(title);
-
-    const description = document.createElement('p');
-    description.classList.add('m-0', 'small', 'text-black-50');
-    description.textContent = feed.descriptionFeed;
-    liFeed.appendChild(description);
+      const description = document.createElement('p');
+      description.classList.add('m-0', 'small', 'text-black-50');
+      description.textContent = feed.descriptionFeed;
+      liFeed.appendChild(description);
     });
   };
   
-  const renderPosts = () => {
+  const renderPosts = (state) => {
     elements.postsEl.innerHTML = '';
     
     const divBorderPost = document.createElement('div');
@@ -113,33 +110,33 @@ export default (elements, i18n, state) => {
     const ulPosts = document.createElement('ul');
     ulPosts.classList.add('list-group', 'border-0', 'rounded-0');
     divBorderPost.appendChild(ulPosts);
-  };
 
-  const addNewPost = (state) => {
     state.posts.map((post) => {
       const ulPosts = elements.postsEl.querySelector('ul');
 
-    const liPosts = document.createElement('li');
-    liPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    ulPosts.prepend(liPosts);
+      const liPosts = document.createElement('li');
+      liPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+      ulPosts.prepend(liPosts);
 
-    const a = document.createElement('a');
-    a.setAttribute('href', post.linkPost);
-    a.classList.add('fw-bold');
-    a.setAttribute('data-id', post.id);
-    a.setAttribute('target', '_blank');
-    a.setAttribute('rel', 'noopener noreferrer');
-    a.textContent = post.titlePost;
-    liPosts.appendChild(a);
+      const a = document.createElement('a');      
+      const classOption = state.uiState.viewedPosts.includes(post.id) ? 'fw-normal' : 'fw-bold';
+      
+      a.setAttribute('href', post.linkPost);
+      a.classList.add(classOption);
+      a.setAttribute('data-id', post.id);
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+      a.textContent = post.titlePost;
+      liPosts.appendChild(a);
 
-    const btn = document.createElement('button');
-    btn.setAttribute('type', 'button');
-    btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-    btn.setAttribute('data-id', post.id);
-    btn.setAttribute('data-bs-toggle', 'modal');
-    btn.setAttribute('data-bs-target', '#modal');
-    btn.textContent = i18n.t('viewBtn');
-    liPosts.appendChild(btn);
+      const btn = document.createElement('button');
+      btn.setAttribute('type', 'button');
+      btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+      btn.setAttribute('data-id', post.id);
+      btn.setAttribute('data-bs-toggle', 'modal');
+      btn.setAttribute('data-bs-target', '#modal');
+      btn.textContent = i18n.t('viewBtn');
+      liPosts.appendChild(btn);
     })
   };
 
@@ -154,9 +151,7 @@ export default (elements, i18n, state) => {
     p.textContent = post.descriptionPost;
     const modalBody = modal.querySelector('.modal-body');
     modalBody.appendChild(p);
-    modal.querySelector('.full-article').href = post.linkPost;
-    const a = document.querySelector('a[data-id="' + identifier + '"]');
-    a.classList.replace('fw-bold', 'fw-normal');
+    modal.querySelector('.full-article').href = post.linkPost;    
   };
 
   const watchedState = onChange(state, (path, value) => {
@@ -165,12 +160,11 @@ export default (elements, i18n, state) => {
         renderForm(value);
         break;
       case 'feeds':
-        renderFeeds();
-        addNewFeed(state);
+        renderFeeds(state);
         break;
       case 'posts':
-        renderPosts();
-        addNewPost(state);
+      case 'uiState.viewedPosts':
+        renderPosts(state);
         break;
       case 'uiState.actualId':
         renderModal(state);
