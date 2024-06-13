@@ -38,22 +38,22 @@ const uploadRss = ((watchedState, url) => {
 
 const updatePosts = (watchedState) => {
   const updatePeriod = 5000;
-  const promises = watchedState.feeds.map((feed) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
-    .then((response) => {
-      const { posts } = parse(response.data.contents);
-      const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
-      const newPosts = posts.filter((post) => !oldLinks.includes(post.linkPost));
-      newPosts.forEach((post) => {
-        post.id = uniqueId();
-        post.feedId = feed.id;
+  const promises = watchedState.feeds.forEach((feed) => {
+    axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
+      .then((response) => {
+        const { posts } = parse(response.data.contents);
+        const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
+        const newPosts = posts.filter((post) => !oldLinks.includes(post.linkPost));
+        newPosts.forEach((post) => {
+          post.id = uniqueId();
+          post.feedId = feed.id;
+        })    
+
+        watchedState.posts = [...watchedState.posts, ...newPosts];
+      })
+      .catch(() => {
       });
-
-      watchedState.posts = [...watchedState.posts, ...newPosts];
-    })
-    .catch(() => {
-
-    }),
-  );
+  });
   Promise.all(promises)
     .then(() => {
       setTimeout(() => {
