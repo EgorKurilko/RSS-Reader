@@ -8,7 +8,7 @@ import resources from './locale/index.js';
 import parse from './parse.js';
 
 const uploadRss = ((watchedState, url) => {
-  return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
+  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
     .then((response) => {
       const { feed, posts } = parse(response.data.contents);
       feed.id = uniqueId();
@@ -37,8 +37,9 @@ const uploadRss = ((watchedState, url) => {
 });
 
 const updatePosts = (watchedState) => {
+  const updatePeriod = 5000;
   const promises = watchedState.feeds.map((feed) => {
-    return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
+    axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
       .then((response) => {
         const { posts } = parse(response.data.contents);
         const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
@@ -46,19 +47,19 @@ const updatePosts = (watchedState) => {
         newPosts.forEach((post) => {
           post.id = uniqueId();
           post.feedId = feed.id;
-        });
+        })
 
-        watchedState.posts = [...watchedState.posts, ...newPosts];      
+        watchedState.posts = [...watchedState.posts, ...newPosts];
       })
-      .catch((err) => {
-      })
+      .catch(() => {
+      });
   });
   Promise.all(promises)
     .then(() => {
       setTimeout(() => {
         updatePosts(watchedState);
-      }, 5000);
-    })
+      }, updatePeriod);
+    });
 };
 
 const app = () => {
@@ -113,16 +114,16 @@ const app = () => {
         const schema = initialSchema.notOneOf(watchedState.feeds.map((feed) => feed.url));
 
         schema.validate(url, { abortEarly: false }) // ошибки валидации
-        .then(() => {
-          uploadRss(watchedState, url);
-        })
-        .catch ((err) => {
-          console.log('schema ERR', err);
-          watchedState.errors = err.message.key;
-          watchedState.status = 'failed';
-        })
-      })
-      
+          .then(() => {
+            uploadRss(watchedState, url);
+          })
+          .catch((err) => {
+            console.log('schema ERR', err);
+            watchedState.errors = err.message.key;
+            watchedState.status = 'failed';
+          });
+      });
+
       elements.postsEl.addEventListener('click', (event) => {
         const identifier = event.target.dataset.id;
         if (!identifier) {
@@ -130,10 +131,9 @@ const app = () => {
         }
         watchedState.uiState.viewedPosts.push(identifier);
         watchedState.uiState.actualId = identifier;
-      })
-      
-      updatePosts(watchedState);
+      });
 
+      updatePosts(watchedState);
     });
 };
-export default app ;
+export default app;
