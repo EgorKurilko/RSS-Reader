@@ -7,63 +7,58 @@ import watch from './view.js';
 import resources from './locale/index.js';
 import parse from './parse.js';
 
-const uploadRss = (watchedState, url) => {
+const uploadRss = ((watchedState, url) => {
   return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
-  .then((response) => {
-    const { feed, posts } = parse(response.data.contents);
-    feed.id = uniqueId();
-    feed.url = url;
-    watchedState.feeds.push(feed);
-    posts.forEach((post) => {
-      post.id = uniqueId();
-      post.feedId = feed.id;
-    })
-
-    watchedState.posts = [...watchedState.posts, ...posts];
-    watchedState.status = 'success';
-  })
-  .catch ((err) => {
-
-    if (err.isAxiosError) {
-      watchedState.errors = 'messages.networkErr';
-      watchedState.status = 'failed';
-
-    } else if (err.isParsingError) {
-      watchedState.errors = 'messages.invalidFeed';
-      watchedState.status = 'failed';
-
-    } else {
-      watchedState.errors = 'messages.defaultErr';
-      watchedState.status = 'failed';
-    }
-  });
-};
-
-const updatePosts = (watchedState) => {
-
-  const promises = watchedState.feeds.map((feed) => {
-    return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
     .then((response) => {
-      const { posts } = parse(response.data.contents);
-
-      const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
-      const newPosts = posts.filter((post) => !oldLinks.includes(post.linkPost));
-      newPosts.forEach((post) => {
+      const { feed, posts } = parse(response.data.contents);
+      feed.id = uniqueId();
+      feed.url = url;
+      watchedState.feeds.push(feed);
+      posts.forEach((post) => {
         post.id = uniqueId();
         post.feedId = feed.id;
       });
 
-      watchedState.posts = [...watchedState.posts, ...newPosts];      
+      watchedState.posts = [...watchedState.posts, ...posts];
+      watchedState.status = 'success';
     })
     .catch((err) => {
-    })
+      if (err.isAxiosError) {
+        watchedState.errors = 'messages.networkErr';
+        watchedState.status = 'failed';
+      } else if (err.isParsingError) {
+        watchedState.errors = 'messages.invalidFeed';
+        watchedState.status = 'failed';
+      } else {
+        watchedState.errors = 'messages.defaultErr';
+        watchedState.status = 'failed';
+      }
+    });
+});
+
+const updatePosts = (watchedState) => {
+  const promises = watchedState.feeds.map((feed) => {
+    return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
+      .then((response) => {
+        const { posts } = parse(response.data.contents);
+        const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
+        const newPosts = posts.filter((post) => !oldLinks.includes(post.linkPost));
+        newPosts.forEach((post) => {
+          post.id = uniqueId();
+          post.feedId = feed.id;
+        });
+
+        watchedState.posts = [...watchedState.posts, ...newPosts];      
+      })
+      .catch((err) => {
+      })
   });
   Promise.all(promises)
-  .then(() => {
-    setTimeout(() => {
-      updatePosts(watchedState);
-    }, 5000);
-  })
+    .then(() => {
+      setTimeout(() => {
+        updatePosts(watchedState);
+      }, 5000);
+    })
 };
 
 const app = () => {
@@ -83,62 +78,62 @@ const app = () => {
     debug: false,
     resources,
   })
-  .then(() => {
-    const state = {
-      status: 'filing',
-      errors: null,
-      feeds: [],
-      posts: [],
-      uiState: {
-        actualId: null,
-        viewedPosts: [],
-      },
-    };
+    .then(() => {
+      const state = {
+        status: 'filing',
+        errors: null,
+        feeds: [],
+        posts: [],
+        uiState: {
+          actualId: null,
+          viewedPosts: [],
+        },
+      };
 
-    const watchedState = watch(elements, i18n, state);
+      const watchedState = watch(elements, i18n, state);
 
-    yup.setLocale({
-      string: {
-        url: () => ({ key: 'messages.invalidLink' }),
-      },
-      mixed: {
-        notOneOf: () => ({ key: 'messages.doubleLink' }),
-      },
+      yup.setLocale({
+        string: {
+          url: () => ({ key: 'messages.invalidLink' }),
+        },
+        mixed: {
+          notOneOf: () => ({ key: 'messages.doubleLink' }),
+        },
+      });
+
+      const initialSchema = yup.string().trim().url().required();
+
+      elements.formEl.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const url = formData.get('url');
+        watchedState.status = 'loading';
+
+        const schema = initialSchema.notOneOf(watchedState.feeds.map((feed) => feed.url));
+
+        schema.validate(url, { abortEarly: false }) // ошибки валидации
+        .then(() => {
+          uploadRss(watchedState, url);
+        })
+        .catch ((err) => {
+          console.log('schema ERR', err);
+          watchedState.errors = err.message.key;
+          watchedState.status = 'failed';
+        })
+      })
+      
+      elements.postsEl.addEventListener('click', (event) => {
+        const identifier = event.target.dataset.id;
+        if (!identifier) {
+          return;
+        }
+        watchedState.uiState.viewedPosts.push(identifier);
+        watchedState.uiState.actualId = identifier;
+      })
+      
+      updatePosts(watchedState);
+
     });
-
-    const initialSchema = yup.string().trim().url().required();
-
-    elements.formEl.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      const formData = new FormData(event.target);
-      const url = formData.get('url');
-      watchedState.status = 'loading';
-
-      const schema = initialSchema.notOneOf(watchedState.feeds.map((feed) => feed.url));
-
-      schema.validate(url, { abortEarly: false }) // ошибки валидации
-      .then(() => {
-        uploadRss(watchedState, url);
-      })
-      .catch ((err) => {
-        console.log('schema ERR', err);
-        watchedState.errors = err.message.key;
-        watchedState.status = 'failed';
-      })
-    })
-    
-    elements.postsEl.addEventListener('click', (event) => {
-      const identifier = event.target.dataset.id;
-      if (!identifier) {
-        return;
-      }
-      watchedState.uiState.viewedPosts.push(identifier);
-      watchedState.uiState.actualId = identifier;
-    })
-    
-    updatePosts(watchedState);
-
-  });
 };
 export default app ;
