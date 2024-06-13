@@ -52,7 +52,7 @@ const updatePosts = (watchedState) => {
     })
     .catch(() => {
 
-    })
+    }),
   );
   Promise.all(promises)
     .then(() => {
