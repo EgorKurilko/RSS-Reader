@@ -30,7 +30,6 @@ export default (elements, i18n, state) => {
     elements.inputField.classList.remove('is-invalid');
     elements.messagesField.classList.add('text-success');
     elements.messagesField.classList.remove('text-danger');
-    console.log('renderSuccess ERR 31 view');
     elements.messagesField.textContent = i18n.t('messages.validLink'); 
   };
 

@@ -1,24 +1,19 @@
 import './styles.scss';
-import * as bootstrap from 'bootstrap';
 import uniqueId from 'lodash/uniqueId.js';
 import i18next from 'i18next';
-import *as yup from 'yup';
+import * as yup from 'yup';
+import axios from 'axios';
 import watch from './view.js';
 import resources from './locale/index.js';
-import axios, { formToJSON } from 'axios';
 import parse from './parse.js';
 
 const uploadRss = (watchedState, url) => {
-
   return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
   .then((response) => {
     const { feed, posts } = parse(response.data.contents);
-
     feed.id = uniqueId();
     feed.url = url;
-
     watchedState.feeds.push(feed);
-
     posts.forEach((post) => {
       post.id = uniqueId();
       post.feedId = feed.id;
@@ -29,11 +24,11 @@ const uploadRss = (watchedState, url) => {
   })
   .catch ((err) => {
 
-    if(err.isAxiosError) {
+    if (err.isAxiosError) {
       watchedState.errors = 'messages.networkErr';
       watchedState.status = 'failed';
 
-    } else if(err.isParsingError) {
+    } else if (err.isParsingError) {
       watchedState.errors = 'messages.invalidFeed';
       watchedState.status = 'failed';
 
