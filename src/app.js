@@ -47,7 +47,7 @@ const updatePosts = (watchedState) => {
         newPosts.forEach((post) => {
           post.id = uniqueId();
           post.feedId = feed.id;
-        })    
+        });
 
         watchedState.posts = [...watchedState.posts, ...newPosts];
       })

@@ -1,9 +1,6 @@
 import onChange from 'on-change';
 
 export default (elements, i18n, state) => {
-
-  const { formEl, inputField, submitEl, messagesField, feedsEl, postsEl, modal } = elements;
-
   const unlockForm = () => {
     elements.submitEl.disabled = false;
     elements.inputField.disabled = false;
@@ -14,14 +11,12 @@ export default (elements, i18n, state) => {
     elements.inputField.disabled = true;
   };
 
-
   const renderFailed = () => {
     elements.inputField.classList.add('is-invalid');
     elements.messagesField.classList.add('text-danger');
     console.log('renderFailed ERR 21 view');
     console.log('ERROR:', state.errors);
     elements.messagesField.textContent = i18n.t(state.errors);
-
   };
 
   const renderSuccess = () => {
@@ -72,7 +67,6 @@ export default (elements, i18n, state) => {
     divBorderFeed.appendChild(ulFeeds);
 
     state.feeds.map((feed) => {
-      
       const ulFeeds = elements.feedsEl.querySelector('ul');
       const liFeed = document.createElement('li');
       liFeed.classList.add('list-group-item', 'border-0', 'border-end-0');
@@ -172,6 +166,5 @@ export default (elements, i18n, state) => {
         break;
     }
   });
-
   return watchedState;
 };
