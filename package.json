@@ -2,8 +2,8 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "type": "module",
-  "description": "[![Actions Status](https://github.com/EgorKurilko/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/EgorKurilko/frontend-project-11/actions)",
-  "main": "index.js",
+  "description": "Hexlet Chat",
+  "main": "src/index.js",
   "scripts": {
     "start": "webpack serve --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,6 @@
   "author": "EgorKurilko",
   "license": "ISC",
   "dependencies": {
-    "@floating-ui/dom": "^1.6.3",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "i18next": "^23.10.1",
@@ -22,7 +21,8 @@
   "devDependencies": {
     "css-loader": "^6.10.0",
     "eslint": "^8.57.0",
-    "eslint-config-google": "^0.14.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.4",
     "html-webpack-plugin": "^5.6.0",
     "postcss-loader": "^8.1.1",
     "prettier": "^3.2.5",
