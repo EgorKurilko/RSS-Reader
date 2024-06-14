@@ -47,12 +47,10 @@ const updatePosts = (watchedState) => {
         post.id = uniqueId();
         post.feedId = feed.id;
       });
-
       watchedState.posts = [...watchedState.posts, ...newPosts];
     })
-    .catch(() => {
-    }),
-  );
+    .catch(() => {}),
+);
   Promise.all(promises)
     .then(() => {
       setTimeout(() => {
