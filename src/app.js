@@ -38,7 +38,7 @@ const uploadRss = ((watchedState, url) => {
 
 const updatePosts = (watchedState) => {
   const updatePeriod = 5000;
-  const promises = watchedState.feeds.forEach((feed) => {
+  const promises = watchedState.feeds.filter((feed) => {
     axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
       .then((response) => {
         const { posts } = parse(response.data.contents);
@@ -118,7 +118,6 @@ const app = () => {
             uploadRss(watchedState, url);
           })
           .catch((err) => {
-            console.log('schema ERR', err);
             watchedState.errors = err.message.key;
             watchedState.status = 'failed';
           });
