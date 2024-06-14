@@ -105,10 +105,8 @@ export default (elements, i18n, state) => {
       const liPosts = document.createElement('li');
       liPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
       ulPosts.prepend(liPosts);
-
-      const a = document.createElement('a');
       const classOption = state.uiState.viewedPosts.includes(post.id) ? 'fw-normal' : 'fw-bold';
-
+      const a = document.createElement('a');
       a.setAttribute('href', post.linkPost);
       a.classList.add(classOption);
       a.setAttribute('data-id', post.id);
