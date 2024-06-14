@@ -25,7 +25,7 @@ export default (elements, i18n, state) => {
     elements.inputField.classList.remove('is-invalid');
     elements.messagesField.classList.add('text-success');
     elements.messagesField.classList.remove('text-danger');
-    elements.messagesField.textContent = i18n.t('messages.validLink'); 
+    elements.messagesField.textContent = i18n.t('messages.validLink');
   };
 
   const renderForm = (status) => {
@@ -46,7 +46,7 @@ export default (elements, i18n, state) => {
     }
   };
 
-  const renderFeeds = (state) => {
+  const renderFeeds = () => {
     elements.feedsEl.innerHTML = '';
 
     const divBorderFeed = document.createElement('div');
@@ -66,8 +66,7 @@ export default (elements, i18n, state) => {
     ulFeeds.classList.add('list-group', 'border-0', 'rounded-0');
     divBorderFeed.appendChild(ulFeeds);
 
-    state.feeds.map((feed) => {
-      const ulFeeds = elements.feedsEl.querySelector('ul');
+    state.feeds.foreach((feed) => {
       const liFeed = document.createElement('li');
       liFeed.classList.add('list-group-item', 'border-0', 'border-end-0');
       ulFeeds.prepend(liFeed);
@@ -83,10 +82,10 @@ export default (elements, i18n, state) => {
       liFeed.appendChild(description);
     });
   };
-  
-  const renderPosts = (state) => {
+
+  const renderPosts = () => {
     elements.postsEl.innerHTML = '';
-    
+
     const divBorderPost = document.createElement('div');
     divBorderPost.classList.add('card', 'border-0');
     elements.postsEl.appendChild(divBorderPost);
@@ -104,16 +103,14 @@ export default (elements, i18n, state) => {
     ulPosts.classList.add('list-group', 'border-0', 'rounded-0');
     divBorderPost.appendChild(ulPosts);
 
-    state.posts.map((post) => {
-      const ulPosts = elements.postsEl.querySelector('ul');
-
+    state.posts.foreach((post) => {
       const liPosts = document.createElement('li');
       liPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
       ulPosts.prepend(liPosts);
 
-      const a = document.createElement('a');      
+      const a = document.createElement('a');
       const classOption = state.uiState.viewedPosts.includes(post.id) ? 'fw-normal' : 'fw-bold';
-      
+
       a.setAttribute('href', post.linkPost);
       a.classList.add(classOption);
       a.setAttribute('data-id', post.id);
@@ -130,11 +127,11 @@ export default (elements, i18n, state) => {
       btn.setAttribute('data-bs-target', '#modal');
       btn.textContent = i18n.t('viewBtn');
       liPosts.appendChild(btn);
-    })
+    });
   };
 
-  const renderModal = (state) => {
-    const modal = elements.modal;
+  const renderModal = () => {
+    const { modal } = elements;
     const identifier = state.uiState.actualId;
     const post = state.posts.find((p) => p.id === identifier);
 
@@ -144,7 +141,7 @@ export default (elements, i18n, state) => {
     p.textContent = post.descriptionPost;
     const modalBody = modal.querySelector('.modal-body');
     modalBody.appendChild(p);
-    modal.querySelector('.full-article').href = post.linkPost;    
+    modal.querySelector('.full-article').href = post.linkPost;
   };
 
   const watchedState = onChange(state, (path, value) => {
