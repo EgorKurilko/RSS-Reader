@@ -7,8 +7,17 @@ import watch from './view.js';
 import resources from './locale/index.js';
 import parse from './parse.js';
 
+
+const addProxy = (url) => {
+  const urlwithProxy = new URL('https://allorigins.hexlet.app/get');
+
+  urlwithProxy.searchParams.set('disableCache', 'true');
+  urlwithProxy.searchParams.set('url', url);
+  return urlwithProxy.toString();
+};
+
 const uploadRss = ((watchedState, url) => {
-  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`)
+  axios.get(addProxy(url))
     .then((response) => {
       const { feed, posts } = parse(response.data.contents);
       feed.id = uniqueId();
@@ -24,22 +33,20 @@ const uploadRss = ((watchedState, url) => {
     })
     .catch((err) => {
       if (err.isAxiosError) {
-        watchedState.errors = 'messages.networkErr';
-        watchedState.status = 'failed';
+        watchedState.error = 'messages.networkErr';
       } else if (err.isParsingError) {
-        watchedState.errors = 'messages.invalidFeed';
-        watchedState.status = 'failed';
+        watchedState.error = 'messages.invalidFeed';
       } else {
-        watchedState.errors = 'messages.defaultErr';
-        watchedState.status = 'failed';
+        watchedState.error = 'messages.defaultErr';
       }
+      watchedState.status = 'failed';
     });
 });
 
 const updatePosts = (watchedState) => {
   const updatePeriod = 5000;
   const promises = watchedState.feeds
-    .filter((feed) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${feed.url}`)
+    .filter((feed) => axios.get(addProxy(feed.url))
       .then((response) => {
         const { posts } = parse(response.data.contents);
         const oldLinks = watchedState.posts.map((oldPost) => oldPost.linkPost);
@@ -79,7 +86,7 @@ const app = () => {
     .then(() => {
       const state = {
         status: 'filing',
-        errors: null,
+        error: null,
         feeds: [],
         posts: [],
         uiState: {
@@ -109,20 +116,19 @@ const app = () => {
         watchedState.status = 'loading';
 
         const schema = initialSchema.notOneOf(watchedState.feeds.map((feed) => feed.url));
-
-        schema.validate(url, { abortEarly: false }) // ошибки валидации
+        schema.validate(url, { abortEarly: false })
           .then(() => {
             uploadRss(watchedState, url);
           })
           .catch((err) => {
-            watchedState.errors = err.message.key;
+            watchedState.error = err.message.key;
             watchedState.status = 'failed';
           });
       });
 
       elements.postsEl.addEventListener('click', (event) => {
         const identifier = event.target.dataset.id;
-        if (!identifier) {
+        if (!identifier || watchedState.uiState.viewedPosts.includes(identifier)) {
           return;
         }
         watchedState.uiState.viewedPosts.push(identifier);

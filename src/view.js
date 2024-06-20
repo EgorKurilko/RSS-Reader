@@ -14,7 +14,7 @@ export default (elements, i18n, state) => {
   const renderFailed = () => {
     elements.inputField.classList.add('is-invalid');
     elements.messagesField.classList.add('text-danger');
-    elements.messagesField.textContent = i18n.t(state.errors);
+    elements.messagesField.textContent = i18n.t(state.error);
   };
 
   const renderSuccess = () => {
