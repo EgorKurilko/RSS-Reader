@@ -7,7 +7,6 @@ import watch from './view.js';
 import resources from './locale/index.js';
 import parse from './parse.js';
 
-
 const addProxy = (url) => {
   const urlwithProxy = new URL('https://allorigins.hexlet.app/get');
 
