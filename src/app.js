@@ -127,11 +127,15 @@ const app = () => {
 
       elements.postsEl.addEventListener('click', (event) => {
         const identifier = event.target.dataset.id;
-        if (!identifier || watchedState.uiState.viewedPosts.includes(identifier)) {
+        
+        if (!identifier) {
           return;
         }
-        watchedState.uiState.viewedPosts.push(identifier);
         watchedState.uiState.actualId = identifier;
+
+        if (!watchedState.uiState.viewedPosts.includes(identifier)) {
+          watchedState.uiState.viewedPosts.push(identifier);
+        }
       });
 
       updatePosts(watchedState);
