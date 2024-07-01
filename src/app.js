@@ -127,7 +127,7 @@ const app = () => {
 
       elements.postsEl.addEventListener('click', (event) => {
         const identifier = event.target.dataset.id;
-        
+
         if (!identifier) {
           return;
         }
