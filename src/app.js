@@ -1,3 +1,5 @@
+// eslint-disable no-param-reassign
+
 import './styles.scss';
 import uniqueId from 'lodash/uniqueId.js';
 import i18next from 'i18next';

@@ -1,3 +1,5 @@
+// eslint-disable no-param-reassign
+
 import onChange from 'on-change';
 
 export default (elements, i18n, state) => {
