@@ -11,21 +11,17 @@
 ```
 git clone git@github.com:EgorKurilko/frontend-project-11.git
 ```
-
 ```
 make install
 ```
-
 ```
 make lint
 ```
-
 ```
 make build
 ```
-
 ```
 make develop
 ```
 
-#### [App:](https://frontend-project-11-pearl-six.vercel.app/)
+#### App:https://frontend-project-11-pearl-six.vercel.app
